@@ -47,14 +47,21 @@ object_template
 
 field_list_template
 	:
-		{ $$ = $1; }
+		{
+			$$ = {
+				namedFields: {},
+				otherFields: []
+			};
+		}
 	| "..."
 		{
 			$$ = $1;
 			$$.otherFields.push({ type: "any" });
 		}
 	| concrete_field_list_template
-		{ $$ = $1; }
+		{
+			$$ = $1;
+		}
 	| concrete_field_list_template "," "..."
 		{
 			$$ = $1;
@@ -80,7 +87,7 @@ concrete_field_list_template
 				otherFields: []
 			};
 			if ($1.key === null) {
-				$$.otherFields.push($3.spec);
+				$$.otherFields.push($1.spec);
 			} else {
 				$$.namedFields[$1.key] = $1.spec;
 			}
@@ -92,7 +99,10 @@ field_template
 		{
 			$$ = {};
 			$$.key = eval($1);
-			$$.spec = $3;
+			$$.spec = {
+				fieldType: "required",
+				form: $3
+			};
 		}
 	| "?" STRING ":" value_template
 		{
@@ -164,42 +174,42 @@ element_template
 	: value_template
 		{
 			$$ = {
-				quatifier: [1, 1],
+				quantifier: [1, 1],
 				spec: $1
 			};
 		}
 	| "?" value_template
 		{
 			$$ = {
-				quatifier: [0, 1],
+				quantifier: [0, 1],
 				spec: $2
 			};
 		}
 	| "*" value_template
 		{
 			$$ = {
-				quatifier: [0, -1],
+				quantifier: [0, -1],
 				spec: $2
 			};
 		}
 	| "+" value_template
 		{
 			$$ = {
-				quatifier: [1, -1],
+				quantifier: [1, -1],
 				spec: $2
 			};
 		}
 	| "{" NUMBER "," "}" value_template
 		{
 			$$ = {
-				quatifier: [eval($2), -1],
+				quantifier: [eval($2), -1],
 				spec: $5
 			};
 		}
 	| "{" NUMBER "," NUMBER "}" value_template
 		{
 			$$ = {
-				quatifier: [eval($2), eval($4)],
+				quantifier: [eval($2), eval($4)],
 				spec: $6
 			};
 		}
