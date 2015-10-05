@@ -1,0 +1,3 @@
+[[ true,  "test_class", [1, 3] ],
+ [ true,  "test_class", [1, 2, 3] ],
+ [ false, "test_class", [1, 2, 2, 3] ]]

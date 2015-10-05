@@ -12,6 +12,15 @@ OBJS+= target/generate-validator-collection.min.js
 target/%.min.js: src/%.js
 	uglifyjs -o $@ $^
 
+test: all
+	@echo -n Testing...
+	@set -e; \
+	for fn in test/*; do \
+		if [ -d "$$fn" ]; then \
+			node test/test.js "$$fn"; \
+		fi; \
+	done
+	@echo ' done.'
 clean:
 	-rm -f $(OBJS)
 .PHONY: all clean

@@ -1,0 +1,2 @@
+[[ true,  "test_class", {"A": "B"} ],
+ [ false, "test_class", {"A": "B", "C": "D"} ]]

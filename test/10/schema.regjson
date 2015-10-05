@@ -1,0 +1,1 @@
+test_class :: { "A": "B", *<<desc>>: <other_class> }; other_class :: { "C": "D" }
