@@ -20,6 +20,7 @@ test: all
 			node test/test.js "$$fn"; \
 		fi; \
 	done
+	@node test/selfCheck.js test/*/schema.rjsd src/regjsonSchema.rjsd
 	@echo ' done.'
 clean:
 	-rm -f $(OBJS)
