@@ -22,9 +22,9 @@ define(function () {
 					};
 				case 'array':
 					return (function () {
-						var validatorsForElements = [];
+						var elements = [];
 						for (var i = 0; i != spec.elements.length; ++i) {
-							validatorsForElements.push({
+							elements.push({
 								quantifier: spec.elements[i].quantifier,
 								validator: generatorValidator(spec.elements[i].spec)
 							});
@@ -37,30 +37,53 @@ define(function () {
 								return false;
 							}
 
-							var index = 0;
-							for (var i = 0; i != validatorsForElements.length; ++i) {
-								var v = validatorsForElements[i];
-								var min = v.quantifier[0];
-								var max = v.quantifier[1];
-								for (var j = 0; j != min; ++j) {
-									if (!v.validator(obj[index])) {
-										return false;
+							var statuses = [[0, 0, 0]];
+							var matched = false;
+
+							while (statuses.length != 0) {
+								statuses = Array.prototype.concat.apply([], statuses.map(function (v) {
+									var mass = obj[v[0]];
+									var e = elements[v[1]];
+									var min = e.quantifier[0];
+									var max = e.quantifier[1];
+									var counter = v[2];
+									if (counter < min) {
+										if (!e.validator(mass)) {
+											return [];
+										} else {
+											return [[v[0] + 1, v[1], v[2] + 1]]
+										}
+									} else {
+										if (!e.validator(mass)) {
+											return [[v[0], v[1] + 1, 0]];
+										} else {
+											return [[v[0], v[1] + 1, 0], [v[0] + 1, v[1], v[2] + 1]]
+										}
 									}
-									++index;
-								}
-								for (var j = min; j != max; ++j) {
-									if (!v.validator(obj[index])) {
-										break;
+								}));
+								statuses = statuses.map(function (v) {
+									if (v[1] <= elements.length && v[2] == elements[v[1]].quantifier[1]) {
+										return [v[0], v[1] + 1, 0];
+									} else {
+										return v;
 									}
-									++index;
+								});
+								statuses = Array.prototype.concat.apply([], statuses.map(function (v) {
+									if (v[1] == elements.length) {
+										matched = matched || allowOthers || v[0] == obj.length;
+										return [];
+									} else if (v[0] == obj.length) {
+										return [];
+									} else {
+										return [v];
+									}
+								}));
+								if (matched) {
+									return matched;
 								}
 							}
 
-							if (!allowOthers && index != obj.length) {
-								return false;
-							}
-
-							return true;
+							return matched;
 						};
 					})();
 				case 'choice':
