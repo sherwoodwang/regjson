@@ -1,30 +1,30 @@
-fs = require('fs');
-util = require('util');
+simpleLoader = require('./simpleLoader.js');
 
-withModule = function (filenames, task) {
-	var modules = filenames.map(function (v) { return null; });
-	var loaded = 0;
-	for (var i = 0; i != filenames.length; ++i) {
-		(function (i) {
-			fs.readFile(filenames[i], function (err, data) {
-				var loader = new Function('define', data);
-				loader(function (factory) {
-					modules[i] = factory();
-					++loaded;
-					if (loaded == filenames.length) {
-						task.apply(undefined, modules);
-					}
-				});
-			});
-		})(i);
-	}
-};
-
-withModule(['target/parser.js', 'src/generate-validator-collection.js'],function (parser, generateValidatorCollection) {
-	var schema = fs.readFileSync(process.argv[2] + '/schema.regjson').toString();
+simpleLoader.withModule(['target/parser.js', 'src/generate-validator-collection.js'], function (parser, generateValidatorCollection) {
+	var fs = require('fs');
+	var util = require('util');
+	var schema = fs.readFileSync(process.argv[2] + '/schema.rjsd').toString();
 	var ast = parser.parse(schema);
 	var validators = generateValidatorCollection(ast);
-	var cases = JSON.parse(fs.readFileSync(process.argv[2] + '/cases.json').toString());
+	var cases = [];
+
+	(function (caseFilename) {
+		if (fs.existsSync(caseFilename)) {
+			Array.prototype.push.apply(cases, JSON.parse(fs.readFileSync(caseFilename).toString()));
+		}
+	})(process.argv[2] + '/cases.json');
+
+	(function (caseDirectory) {
+		if (fs.existsSync(caseDirectory)) {
+			var files = fs.readdirSync(caseDirectory);
+			files.forEach(function (fn) {
+				if (fn.endsWith('.json')) {
+					cases.push(JSON.parse(fs.readFileSync(caseDirectory + '/' + fn).toString()));
+				}
+			});
+		}
+	})(process.argv[2] + '/cases');
+
 	cases.forEach(function (v) {
 		if (v[0] != validators[v[1]](v[2])) {
 			console.error('Schema:');
