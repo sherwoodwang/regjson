@@ -2,6 +2,10 @@ define(function () {
 	var createValidators = function (spec) {
 		var validators = {};
 
+		validators['boolean'] = function (obj) {
+			return typeof obj === 'boolean';
+		};
+
 		validators['string'] = function (obj) {
 			return typeof obj === 'string';
 		};
@@ -57,12 +61,12 @@ define(function () {
 										if (!e.validator(mass)) {
 											return [[v[0], v[1] + 1, 0]];
 										} else {
-											return [[v[0], v[1] + 1, 0], [v[0] + 1, v[1], v[2] + 1]]
+											return [[v[0], v[1] + 1, 0], [v[0] + 1, v[1] + 1, 0], [v[0] + 1, v[1], v[2] + 1]]
 										}
 									}
 								}));
 								statuses = statuses.map(function (v) {
-									if (v[1] <= elements.length && v[2] == elements[v[1]].quantifier[1]) {
+									if (v[1] < elements.length && v[2] == elements[v[1]].quantifier[1]) {
 										return [v[0], v[1] + 1, 0];
 									} else {
 										return v;
@@ -92,7 +96,7 @@ define(function () {
 						return function (obj) {
 							return tests.reduce(function (stat, val) {
 								return stat || val(obj);
-							}, false)
+							}, false);
 						};
 					})();
 				case 'instance':
@@ -167,8 +171,6 @@ define(function () {
 							return obj === value;
 						};
 					})();
-				default:
-					return false;
 			}
 		};
 
