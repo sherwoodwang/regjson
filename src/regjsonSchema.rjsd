@@ -1,0 +1,34 @@
+regjson_schema_ast	:: { *<<class name>>: <template> };
+
+template		:: <any> | <array> | <choice> | <instance> | <object> | <value>;
+
+any			:: { "type": "any", ?"description": <string> };
+
+choice			:: { "type": "choice", "branches": [ +<template> ], ?"description": <string> };
+
+instance		:: { "type": "instance", "name": <string>, ?"description": <string> };
+
+value			:: { "type": "value", "value": null | <boolean> | <string> | <number>, ?"description": <string> };
+
+array			:: {
+	"type": "array",
+	"elements": [ *{
+		"quantifier": [ <integer>, <integer> ],
+		"spec": <template>
+	} ],
+	"allowOthers": <boolean>,
+	?"description": <string>
+};
+
+object			:: {
+	"type": "object",
+	"namedFields": {
+		*<<field name>>: {
+			"fieldType": "required" | "optional",
+			"form": <template>
+		}
+	},
+	"otherFields": [ *<template> ],
+	?"base": [ +<template> ],
+	?"description": <string>
+};
