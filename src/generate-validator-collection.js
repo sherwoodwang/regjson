@@ -1,22 +1,10 @@
-define(function () {
-	var createValidators = function (spec) {
+define(['regjson/standard-validators'], function (standatdValidators) {
+	var addValidators = function (base, spec) {
 		var validators = {};
 
-		validators['boolean'] = function (obj) {
-			return typeof obj === 'boolean';
-		};
-
-		validators['string'] = function (obj) {
-			return typeof obj === 'string';
-		};
-
-		validators['number'] = function (obj) {
-			return typeof obj === 'number';
-		};
-
-		validators['integer'] = function (obj) {
-			return typeof obj === 'number' && parseInt(obj) === obj;
-		};
+		for (var clazz in base) {
+			validators[clazz] = base[clazz];
+		}
 
 		var generatorValidator = function (spec) {
 			switch (spec.type) {
@@ -178,6 +166,21 @@ define(function () {
 			validators[className] = generatorValidator(spec[className]);
 		}
 		return validators;
-	};	
-	return createValidators;
+	};
+
+	var generateValidatorCollection = function () {
+		var base, spec;
+
+		if (arguments.length == 1) {
+			base = standatdValidators;
+			spec = arguments[0];
+		} else {
+			base = arguments[0];
+			spec = arguments[1];
+		}
+
+		return addValidators(base, spec);
+	};
+
+	return generateValidatorCollection;
 });

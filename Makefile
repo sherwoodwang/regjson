@@ -1,16 +1,12 @@
-all: target/parser.min.js target/generate-validator-collection.min.js
+all: target/regjson.js
 
 OBJS+= target/parser.js
 target/parser.js: src/parser/regjson.jison src/parser/regjson.jisonlex
 	jison -o $@ -m amd $^
 
-OBJS+= target/parser.min.js
-target/parser.min.js: target/parser.js
-	uglifyjs -o $@ $^
-
-OBJS+= target/generate-validator-collection.min.js
-target/%.min.js: src/%.js
-	uglifyjs -o $@ $^
+OBJS+= target/regjson.js
+target/regjson.js: src/commonjs-wrapper.js target/parser.js src/standard-validators.js src/generate-validator-collection.js src/module.js
+	preprocess $< >$@
 
 test: all
 	@echo -n Testing...

@@ -1,6 +1,18 @@
-simpleLoader = require('./simpleLoader.js');
+requirejs = require('requirejs');
+requirejs.config({
+	map: {
+		'*': {
+			'regjson/parser': './target/parser.js',
+			'regjson/standard-validators':  './src/standard-validators.js',
+			'regjson/generate-validator-collection':  './src/generate-validator-collection.js'
+		}
+	},
+	nodeRequire: require
+});
 
-simpleLoader.withModule(['target/parser.js', 'src/generate-validator-collection.js'], function (parser, generateValidatorCollection) {
+define = require('amdefine')(module);
+
+requirejs(['regjson/parser', 'regjson/generate-validator-collection'], function (parser, generateValidatorCollection) {
 	var fs = require('fs');
 	var console = require('console');
 	var util = require('util');
