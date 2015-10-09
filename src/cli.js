@@ -1,5 +1,11 @@
 var regjson = require('regjson');
 
+function help() {
+	console.log('Usage: regjson <subcommand>');
+	console.log('       regjson ast <schema.rjsd>');
+	console.log('       regjson validate <schema.rjsd | validator-factory.js>... <data.json>...');
+}
+
 function validate() {
 	var fs = require('fs');
 	var v = regjson.standardValidators;
@@ -41,7 +47,11 @@ function ast(schemaFilename) {
 function main(subcmd) {
 	var cmds = {
 		'validate': validate,
-		'ast': ast
+		'ast': ast,
+		'help': help
+	}
+	if (typeof subcmd === "undefined" || typeof cmds[subcmd] === "undefined") {
+		subcmd = 'help';
 	}
 	cmds[subcmd].apply(this, Array.prototype.slice.call(arguments, 1));
 }
