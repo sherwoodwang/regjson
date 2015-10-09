@@ -1,4 +1,4 @@
-all: target/regjson.js
+all: target/regjson.min.js
 
 OBJS+= target/parser.js
 target/parser.js: src/parser/regjson.jison src/parser/regjson.jisonlex
@@ -7,6 +7,10 @@ target/parser.js: src/parser/regjson.jison src/parser/regjson.jisonlex
 OBJS+= target/regjson.js
 target/regjson.js: src/commonjs-wrapper.js target/parser.js src/standard-validators.js src/generate-validator-collection.js src/module.js
 	preprocess $< >$@
+
+OBJS+= target/regjson.min.js
+target/regjson.min.js: target/regjson.js
+	uglifyjs $^ >$@
 
 test: all
 	@echo -n Testing...
