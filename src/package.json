@@ -1,0 +1,23 @@
+{
+	"name": "regjson",
+	"version": "0.0.1",
+	"description": "A simple schema definition language for JSON",
+	"preferGlobal": true,
+	"license" : "BSD-2-Clause",
+	"author": "Sherwood Wang <sherwood@wang.onl>",
+	"main": "regjson.min.js",
+	"bin": {
+		"regjson" : "cli.min.js"
+	},
+	"files": ["regjson.min.js", "cli.min.js"],
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/sherwoodwang/regjson.git"
+	},
+	"devDependencies": {
+		"jison": "0.4.x",
+		"uglify-js": "~2.4.0",
+		"preprocessor": "~1.4.0",
+		"requirejs": "~2.1.0"
+	}
+}

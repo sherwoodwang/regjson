@@ -10,7 +10,30 @@ target/regjson.js: src/commonjs-wrapper.js target/parser.js src/standard-validat
 
 OBJS+= target/regjson.min.js
 target/regjson.min.js: target/regjson.js
-	uglifyjs $^ >$@
+	uglifyjs -m <$^ >$@
+
+OBJS+= target/cli.min.js
+target/cli.min.js: src/cli.js
+	{ echo '#!/usr/bin/env node'; uglifyjs -m <$^; } >$@
+
+OBJS+= target/package.json
+target/package.json: src/package.json
+	cat $^ >$@
+
+OBJS+= target/version
+target/version: src/package.json
+	node -e 'var package ='"`cat src/package.json`"'; console.log(package.version)' >target/version
+
+OBJS+= target/make.mk
+target/make.mk: target/version
+	{ \
+		echo "OBJS+= regjson-`cat target/version`.tgz";\
+		echo "all: regjson-`cat target/version`.tgz";\
+		echo "regjson-`cat target/version`.tgz: target/regjson.min.js target/cli.min.js target/package.json";\
+		echo "	npm pack target";\
+	} >target/make.mk
+
+-include target/make.mk
 
 test: all
 	@echo -n Testing...
